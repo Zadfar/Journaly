@@ -1,11 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AuthContext = createContext();
 
 export const AuthContextProvider = ({children}) => {
     const [session, setSession] = useState();
     const [loading, setLoading] = useState(true);
+    const queryClient = useQueryClient();
 
     // signup
     const signUpNewUser = async (email, password, fullName, avatarUrl) => {
@@ -64,6 +66,7 @@ export const AuthContextProvider = ({children}) => {
     const signOut = () => {
         const { error } = supabase.auth.signOut();
 
+        queryClient.clear();
         if (error) {
             console.error("There was an error signing out:", error);
         }

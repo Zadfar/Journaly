@@ -29,7 +29,6 @@ const SignupPage = () => {
 		});
 
 		const avatarUrl = avatar.toDataUri();
-		console.log(avatarUrl);
 
 		setLoading(true);
 		try {
@@ -39,7 +38,7 @@ const SignupPage = () => {
 				navigate("/home")
 			}
 		} catch (error) {
-			setError("sign-up error");
+			setError("sign-up error", error);
 		} finally {
 			setLoading(false);
 		}

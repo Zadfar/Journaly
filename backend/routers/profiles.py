@@ -5,6 +5,7 @@ from schemas import ProfileResponse
 
 router = APIRouter(prefix="/profile", tags=["Profile"])
 
+# Get User Profile
 @router.get("/", response_model=ProfileResponse)
 def get_my_profile(user_id: str = Depends(get_current_user)):
     supabase = get_supabase()

@@ -20,5 +20,15 @@ class JournalResponse(BaseModel):
     summary: Optional[str]
     tags: List[str] = []
     created_at: datetime
-    # We return content only if explicitly requested/decrypted
     content: Optional[str] = None
+
+# --- Mood ---
+class MoodCreate(BaseModel):
+    score: int
+    label: str
+
+class MoodResponse(BaseModel):
+    id: str
+    mood_score: int
+    mood_label: str
+    created_at: datetime

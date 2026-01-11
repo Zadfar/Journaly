@@ -13,6 +13,7 @@ class DeepenRequest(BaseModel):
     content: str
     journal_id: Optional[str] = None
 
+# Get All Journals 
 @router.get("/", response_model=list[JournalResponse])
 def get_journals(user_id: str = Depends(get_current_user)):
     supabase = get_supabase()
@@ -31,6 +32,7 @@ def get_journals(user_id: str = Depends(get_current_user)):
         ))
     return journals
 
+# Save Journal
 @router.post("/", response_model=JournalResponse)
 async def create_journal(
     entry: JournalCreate,
@@ -73,7 +75,8 @@ async def create_journal(
     except Exception as e:
         print(f"Error creating journal: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-    
+
+# Delete Journal    
 @router.delete("/{journal_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_journal(journal_id: str, user_id: str = Depends(get_current_user)):
     supabase = get_supabase()
@@ -82,12 +85,13 @@ def delete_journal(journal_id: str, user_id: str = Depends(get_current_user)):
     # ensuring a user can never delete someone else's journal.
     result = supabase.table("journals").delete().eq("id", journal_id).eq("user_id", user_id).execute()
     
-    # Optional: Check if a row was actually deleted
+    # Check if a row was actually deleted
     if not result.data:
         raise HTTPException(status_code=404, detail="Journal not found or not authorized")
     
     return None
 
+# Get Journal by Id
 @router.get("/{journal_id}", response_model=JournalResponse)
 def get_journal_detail(journal_id: str, user_id: str = Depends(get_current_user)):
     supabase = get_supabase()
@@ -109,10 +113,10 @@ def get_journal_detail(journal_id: str, user_id: str = Depends(get_current_user)
         summary=data['summary'],
         tags=data['tags'],
         created_at=data['created_at'],
-        content=decrypted_content # Sending full text to frontend
+        content=decrypted_content
     )
 
-# 2. UPDATE ENTRY
+# Update Journal By Id
 @router.put("/{journal_id}", response_model=JournalResponse)
 def update_journal(journal_id: str, entry: JournalCreate, user_id: str = Depends(get_current_user)):
     supabase = get_supabase()
@@ -137,11 +141,11 @@ def update_journal(journal_id: str, entry: JournalCreate, user_id: str = Depends
         content=entry.content
     )
 
+# Go Deeper
 @router.post("/deepen")
 async def go_deeper(req: DeepenRequest, user_id: str = Depends(get_current_user)):
     supabase = get_supabase()
     
-    # 1. AUTO-SAVE Logic
     # We must ensure the entry exists/is updated before we run analysis
     journal_id = req.journal_id
     encrypted_content = crypto_service.encrypt(req.content)
@@ -161,7 +165,7 @@ async def go_deeper(req: DeepenRequest, user_id: str = Depends(get_current_user)
         }).execute()
         journal_id = res.data[0]['id']
 
-    # 2. RUN "GO DEEPER" AI
+    # RUN "GO DEEPER" AI
     prompt = await ai_service.get_deepen_prompt(user_id, req.content)
 
     return {

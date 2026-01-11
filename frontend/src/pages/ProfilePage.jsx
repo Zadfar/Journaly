@@ -1,5 +1,4 @@
 import { UserAuth } from '../context/AuthContext';
-import { supabase } from '../supabaseClient';
 import { User, Mail, Calendar } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import api from '../services/api';

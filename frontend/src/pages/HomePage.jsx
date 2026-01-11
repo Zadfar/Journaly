@@ -1,12 +1,18 @@
 import React from 'react';
+import { UserAuth } from '../context/AuthContext';
+import MoodEntry from '../components/MoodEntry';
 
 const HomePage = () => {
+  const { session } = UserAuth();
+
+  const userName = session?.user.identities[0].identity_data.full_name;
+
   return (
     <div className="space-y-8">
       
       {/* 1. Header Section */}
       <div>
-        <h1 className="text-3xl font-bold text-[#2C4C3B]">Good Morning, Alex</h1>
+        <h1 className="text-3xl font-bold text-[#2C4C3B]">Good Morning, {userName}</h1>
         <p className="text-[#2C4C3B]/60">Ready to reflect on your day?</p>
       </div>
 
@@ -15,11 +21,8 @@ const HomePage = () => {
         
         {/* Main Card: Takes up 2 columns on large screens */}
         <div className="lg:col-span-2 bg-white p-6 rounded-3xl border border-[#2C4C3B]/5 shadow-sm">
-           <h2 className="text-xl font-bold mb-4">Recent Entries</h2>
-           {/* ... List of entries ... */}
-           <div className="h-40 bg-[#F3F0E7] rounded-xl flex items-center justify-center text-[#2C4C3B]/40">
-              Placeholder for Entry List
-           </div>
+           <h2 className="text-xl font-bold mb-4">How are you feeling Today?</h2>
+           <MoodEntry />
         </div>
 
         {/* Side Widget: Takes up 1 column on large screens, stacks on mobile */}
