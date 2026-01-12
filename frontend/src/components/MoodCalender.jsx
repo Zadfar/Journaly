@@ -43,7 +43,7 @@ const MoodCalendar = () => {
   });
 
   // Helper to get color based on score
-  const getMoodColor = (score: number) => {
+  const getMoodColor = (score) => {
     switch(score) {
       case 1: return 'bg-[#cf3933]'; // (Rough)
       case 2: return 'bg-[#ff9a1d]'; // (Not Good)
@@ -54,7 +54,7 @@ const MoodCalendar = () => {
     }
   };
 
-  const getMoodTooltip = (score: number) => {
+  const getMoodTooltip = (score) => {
     const labels = ["", "Rough", "Not Good", "Okay", "Good", "Great!"];
     return labels[score] || "";
   };
@@ -103,7 +103,7 @@ const MoodCalendar = () => {
           <div className="grid grid-cols-7 gap-y-4">
             {days.map((day) => {
               // Find mood for this specific day
-              const dayMood = moodHistory?.find((m: { created_at: string | number | Date; }) => 
+              const dayMood = moodHistory?.find((m) => 
                 isSameDay(new Date(m.created_at), day)
               );
 

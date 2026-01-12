@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import profiles, journals, moods, quotes
+from routers import profiles, journals, moods, quotes, insights
 
 app = FastAPI(title="Journaly API")
 
@@ -22,6 +22,7 @@ app.include_router(profiles.router)
 app.include_router(journals.router)
 app.include_router(moods.router)
 app.include_router(quotes.router)
+app.include_router(insights.router)
 
 @app.get("/health")
 def health_check():

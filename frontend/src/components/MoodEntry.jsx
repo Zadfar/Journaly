@@ -30,7 +30,7 @@ const MoodEntry = () => {
 
   // 2. Mutation to save mood via FastAPI
   const mutation = useMutation({
-    mutationFn: async (moodData : {score: number, text: string, icon: any}) => {
+    mutationFn: async (moodData) => {
       // Matches the Pydantic MoodCreate schema: { score: int, label: str }
       const payload = { 
         score: moodData.score, 
@@ -44,7 +44,7 @@ const MoodEntry = () => {
     }
   });
 
-  const handleMoodSelect = (index : any) => {
+  const handleMoodSelect = (index) => {
     setSelectedMood(index);
   };
 

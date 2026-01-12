@@ -4,7 +4,7 @@ import api from '../services/api';
 
 const DailyQuoteWidget = () => {
   
-  const { data: quote, isLoading, isError, refetch } = useQuery({
+  const { data: quote, isLoading, isError} = useQuery({
     queryKey: ['dailyQuote'],
     queryFn: async () => {
       const res = await api.get('/quotes/daily');

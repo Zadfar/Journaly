@@ -144,3 +144,74 @@ async def process_journal_background(journal_id: str, content: str, user_id: str
 
     except Exception as e:
         print(f"❌ [Background Error] {str(e)}")
+
+WEEKLY_PROMPT = """
+You are an empathetic, wise AI journaling assistant. Your role is to analyze a user's week and provide a "Weekly Harvest" summary.
+Tone: Warm, grounded, insightful, like a gardener observing growth. Avoid clinical or robotic language.
+
+INPUT: A list of mood entries and journal entries for the week.
+OUTPUT: Strictly valid JSON with the following fields:
+1. "headline": A 3-6 word poetic title for the week (e.g. "A Week of Quiet Resilience").
+2. "summary": A 2-3 sentence warm reflection on their week.
+3. "pattern": A specific observation connecting their mood to an activity or topic (e.g. "You felt lighter on days you walked").
+4. "sentiment_trend": One of ["Rising", "Falling", "Stable", "Volatile"].
+5. "actionable_tip": A gentle suggestion for next week based on their lows/highs.
+
+Do not include markdown formatting. Return raw JSON.
+"""
+
+async def generate_weekly_insight(moods: list, journals: list, start_date: str, end_date: str):
+    """
+    Analyzes moods and journals for a specific week to generate a summary.
+    """
+    client = get_groq()
+    
+    # 1. Pre-process Data for the LLM
+    # We need to decrypt journals and format moods into a readable string
+    
+    context_str = f"Timeframe: {start_date} to {end_date}\n\n"
+    
+    # Format Moods
+    context_str += "MOOD HISTORY:\n"
+    if not moods:
+        context_str += "No moods logged this week.\n"
+    for m in moods:
+        # m['created_at'] is usually an ISO string
+        date_str = m['created_at'].split('T')[0]
+        context_str += f"- {date_str}: Score {m['mood_score']}/5 ({m['mood_label']})\n"
+        
+    context_str += "\nJOURNAL ENTRIES:\n"
+    if not journals:
+        context_str += "No journals written this week.\n"
+    for j in journals:
+        try:
+            date_str = j['created_at'].split('T')[0]
+            # Decrypt content for analysis
+            decrypted_content = crypto_service.decrypt(j['content_encrypted'])
+            # We truncate to 500 chars to save context window, focusing on the core message
+            context_str += f"- {date_str}: {decrypted_content[:500]}...\n"
+        except Exception:
+            context_str += f"- {date_str}: [Content Unreadable]\n"
+
+    # 2. Call LLM
+    try:
+        completion = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": WEEKLY_PROMPT},
+                {"role": "user", "content": f"Analyze this user data:\n\n{context_str}"}
+            ],
+            model="llama-3.3-70b-versatile",
+            response_format={"type": "json_object"}
+        )
+        
+        return json.loads(completion.choices[0].message.content)
+        
+    except Exception as e:
+        print(f"Error generating weekly insight: {e}")
+        return {
+            "headline": "A Quiet Week",
+            "summary": "We couldn't fully analyze your week, but every day is a new beginning.",
+            "pattern": "Keep tracking to see more patterns.",
+            "sentiment_trend": "Stable",
+            "actionable_tip": "Take a moment to breathe deeply today."
+        }

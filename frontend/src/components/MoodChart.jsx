@@ -34,7 +34,7 @@ const MoodChart = () => {
   });
 
   // Process data for Recharts
-  const chartData = rawData?.map((item: { created_at: string; }) => ({
+  const chartData = rawData?.map((item) => ({
     ...item,
     dateLabel: format(parseISO(item.created_at), 'd MMM'), // e.g. "12 Jan"
     fullDate: format(parseISO(item.created_at), 'PPP'),    // e.g. "Jan 12, 2026"
@@ -111,7 +111,7 @@ const MoodChart = () => {
   );
 };
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
