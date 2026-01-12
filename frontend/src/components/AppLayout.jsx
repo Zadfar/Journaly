@@ -1,11 +1,10 @@
 import React from 'react';
-import { Home, Book, User, Plus, LogOut, Lightbulb, Settings } from 'lucide-react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { Home, Book, User, Plus, LogOut, Lightbulb } from 'lucide-react';
+import { Link, NavLink } from 'react-router-dom';
 import { UserAuth } from '../context/AuthContext';
 
 const AppLayout = ({ children }) => {
   const { signOut } = UserAuth();
-  const navigate = useNavigate();
   
 
   const handleSignOut = async () => {
@@ -19,9 +18,7 @@ const AppLayout = ({ children }) => {
   return (
     <div className="min-h-screen bg-[#F3F0E7] font-sans text-[#2C4C3B]">
       
-      {/* =========================================
-          DESKTOP SIDEBAR (Hidden on Mobile)
-         ========================================= */}
+      {/* Desktop Nav */}
       <aside className="hidden md:flex flex-col w-64 h-screen fixed left-0 top-0 bg-white border-r border-[#2C4C3B]/10 px-4 py-6">
         <div className="flex items-center gap-2 mb-8 px-2">
             <div className="bg-[#228B22] p-1.5 rounded-lg">
@@ -62,9 +59,11 @@ const AppLayout = ({ children }) => {
             <MobileNavItem icon={<Book />} label="Journal" to={"/journals"}/>
             
             <div className="-mt-8">
-                <button className="bg-[#228B22] hover:bg-[#008000] text-white p-4 rounded-full shadow-xl shadow-[#228B22]/20 transition-transform active:scale-95">
-                    <Plus size={24} />
-                </button>
+                <Link to="/journal/new">
+                  <button className="bg-[#228B22] hover:bg-[#008000] text-white p-4 rounded-full shadow-xl shadow-[#228B22]/20 transition-transform active:scale-95">
+                      <Plus size={24} />
+                  </button>
+                </Link>
             </div>
 
             <MobileNavItem icon={<Lightbulb />} label="Insights" to={"/insights"}/>

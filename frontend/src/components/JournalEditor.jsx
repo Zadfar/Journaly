@@ -147,12 +147,6 @@ const JournalEditor = ({ initialContent, onSave, isSaving, journalId, onChange }
             loading={isAnalyzing}
           />
 
-          <ActionButton 
-            icon={<Wand2 className="w-4 h-4 md:w-5 md:h-5" />} 
-            label="Fix Grammar"
-            onClick={() => {}}
-          />
-
           <ActionButton
             label="Save Entry" 
             onClick={handleSaveClick} 
