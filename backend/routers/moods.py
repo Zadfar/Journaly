@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from dependencies import get_current_user
 from config import get_supabase
@@ -57,3 +58,23 @@ def check_mood_logged_today(user_id: str = Depends(get_current_user)):
         .execute()
         
     return len(res.data) > 0
+
+# Get Mood for Current Month
+@router.get("/history", response_model=List[MoodResponse])
+def get_mood_history(
+    start_date: str, 
+    end_date: str, 
+    user_id: str = Depends(get_current_user)
+):
+    supabase = get_supabase()
+    
+    # Fetch moods within the date range
+    res = supabase.table("mood_entries")\
+        .select("*")\
+        .eq("user_id", user_id)\
+        .gte("created_at", start_date)\
+        .lte("created_at", end_date)\
+        .order("created_at", desc=False)\
+        .execute()
+        
+    return res.data
