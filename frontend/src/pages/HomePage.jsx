@@ -1,6 +1,7 @@
 import React from 'react';
 import { UserAuth } from '../context/AuthContext';
 import MoodEntry from '../components/MoodEntry';
+import DailyQuoteWidget from '../components/DailyQuoteWidget';
 
 const HomePage = () => {
   const { session } = UserAuth();
@@ -26,13 +27,7 @@ const HomePage = () => {
         </div>
 
         {/* Side Widget */}
-        <div className="bg-[#228B22] text-white p-6 rounded-3xl shadow-lg">
-           <h2 className="text-2xl font-bold mb-2">Daily Quote</h2>
-           <p className="italic opacity-90 pt-4">"The only journey is the one within."</p>
-           <div className="pt-4">
-              <p className="text-sm opacity-80">Mood Trend: +12%</p>
-           </div>
-        </div>
+        <DailyQuoteWidget />
 
       </div>
     </div>
