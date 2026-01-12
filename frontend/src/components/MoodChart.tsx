@@ -59,7 +59,7 @@ const MoodChart = () => {
   }
 
   return (
-    <div className="bg-white p-6 rounded-3xl border border-[#2C4C3B]/10 shadow-sm h-full flex flex-col recharts-temp">
+    <div className="bg-white p-6 rounded-3xl border border-[#2C4C3B]/10 shadow-sm h-full flex flex-col">
       <h2 className="text-xl font-bold text-[#2C4C3B] mb-6">Mood Flow</h2>
       
       <div className="flex-1 min-h-62.5 w-full">
@@ -94,21 +94,7 @@ const MoodChart = () => {
               width={40}
             />
             
-            <Tooltip 
-                cursor={{ stroke: '#2C4C3B', strokeWidth: 1, strokeDasharray: '5 5' }}
-                contentStyle={{ 
-                backgroundColor: '#fff', 
-                borderRadius: '12px', 
-                border: '1px solid rgba(44, 76, 59, 0.1)',
-                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                }}
-                itemStyle={{ color: '#2C4C3B', fontWeight: 'bold' }}
-                formatter={(value: any) => [ 
-                // Show Label + Icon instead of just number
-                `${["", "🙁", "😐", "🙂", "😄", "🤗"][value]} `, 
-                "Mood Score"
-                ]}
-            />
+            <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#2C4C3B', strokeWidth: 1, strokeDasharray: '5 5' }} />
             
             <Area 
               type="monotone" 
@@ -123,6 +109,25 @@ const MoodChart = () => {
       </div>
     </div>
   );
+};
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="bg-[#2C4C3B] text-white p-3 rounded-xl shadow-xl border border-white/20">
+        <p className="text-xs opacity-80 mb-1">{data.fullDate}</p>
+        <div className="flex items-center gap-2">
+           <span className="text-2xl">
+             {/* Map score to icon again for the tooltip */}
+             {["", "🙁", "😐", "🙂", "😄", "🤗"][data.mood_score]}
+           </span>
+           <p className="font-bold text-lg">{data.mood_label}</p>
+        </div>
+      </div>
+    );
+  }
+  return null;
 };
 
 export default MoodChart;

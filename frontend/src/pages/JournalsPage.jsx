@@ -82,7 +82,7 @@ const JournalsPage = () => {
           <p className="text-[#2C4C3B]/60 max-w-sm mt-2 mb-6">
             Start your journey of self-reflection today.
           </p>
-          <Link to="/new-entry" className="text-[#228B22] font-medium hover:underline">
+          <Link to="/journal/new" className="text-[#228B22] font-medium hover:underline">
             Create your first entry &rarr;
           </Link>
         </div>
