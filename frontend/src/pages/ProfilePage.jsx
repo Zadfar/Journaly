@@ -9,6 +9,8 @@ const ProfilePage = () => {
 
   const fetchProfile = async () => {
     const { data } = await api.get('/profile/');
+    console.log(data);
+    
     return data;
   };
 

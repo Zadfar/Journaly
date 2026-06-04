@@ -13,6 +13,10 @@ class DeepenRequest(BaseModel):
     content: str
     journal_id: Optional[str] = None
 
+@router.get("/prompts")
+async def get_writing_prompts(user_id: str = Depends(get_current_user)):
+    return await ai_service.get_daily_prompts(user_id)
+
 # Get All Journals 
 @router.get("/", response_model=list[JournalResponse])
 def get_journals(user_id: str = Depends(get_current_user)):
@@ -111,14 +115,14 @@ def get_journal_detail(journal_id: str, user_id: str = Depends(get_current_user)
         id=data['id'],
         mood_score=data['mood_score'],
         summary=data['summary'],
-        tags=data['tags'],
+        tags=data['tags'] or [],
         created_at=data['created_at'],
         content=decrypted_content
     )
 
 # Update Journal By Id
 @router.put("/{journal_id}", response_model=JournalResponse)
-def update_journal(journal_id: str, entry: JournalCreate, user_id: str = Depends(get_current_user)):
+def update_journal(journal_id: str, entry: JournalCreate, background_tasks: BackgroundTasks,user_id: str = Depends(get_current_user)):
     supabase = get_supabase()
 
     # Encrypt new content
@@ -127,8 +131,16 @@ def update_journal(journal_id: str, entry: JournalCreate, user_id: str = Depends
     # Update DB (For now, we are NOT re-running AI to save resources, but you could)
     data = {
         "content_encrypted": encrypted_content,
-        "mood_score": entry.mood_score
+        "mood_score": entry.mood_score,
+        "summary": "Generating summary..."
     }
+
+    background_tasks.add_task(
+        ai_service.process_journal_background,
+        journal_id,
+        entry.content,
+        user_id
+    )
     
     res = supabase.table("journals").update(data).eq("id", journal_id).eq("user_id", user_id).execute()
     
@@ -136,9 +148,10 @@ def update_journal(journal_id: str, entry: JournalCreate, user_id: str = Depends
     return JournalResponse(
         id=journal_id,
         mood_score=entry.mood_score,
-        summary="Updated...", # Placeholder until AI runs again
+        summary="Generating summary...", # Placeholder until AI runs again
         created_at=datetime.now(),
-        content=entry.content
+        content=entry.content,
+        tags=[]
     )
 
 # Go Deeper

@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import httpx
 import asyncio
@@ -215,3 +216,109 @@ async def generate_weekly_insight(moods: list, journals: list, start_date: str, 
             "sentiment_trend": "Stable",
             "actionable_tip": "Take a moment to breathe deeply today."
         }
+    
+async def get_daily_prompts(user_id: str):
+    """
+    Generates 3 starter prompts for the user.
+    Caches them in the DB so they remain constant for the entire day.
+    """
+    client = get_groq()
+    supabase = get_supabase()
+
+    # CHECK DB: Do we already have prompts for today?
+    today_str = datetime.utcnow().date().isoformat() # "2024-01-13"
+    
+    existing = supabase.table("user_insights")\
+        .select("payload")\
+        .eq("user_id", user_id)\
+        .eq("insight_type", "daily_prompts")\
+        .gte("created_at", today_str)\
+        .execute()
+        
+    if existing.data:
+        print(f"✅ Returning cached prompts for {user_id}")
+        return existing.data[0]['payload']
+
+    # GENERATE: No prompts found, so create them
+    
+    recent_journals = supabase.table("journals")\
+        .select("summary, mood_score")\
+        .eq("user_id", user_id)\
+        .order("created_at", desc=True)\
+        .limit(3)\
+        .execute()
+
+    context = ""
+    if recent_journals.data:
+        context = "Recent User Themes:\n"
+        for j in recent_journals.data:
+            context += f"- Mood {j['mood_score']}/5: {j.get('summary', 'No summary')}\n"
+    else:
+        context = "User is new. Provide general, welcoming prompts."
+
+    system_prompt = f"""
+    You are a wise, warm, and grounded journaling companion (like a kind gardener of the mind). 
+    
+    CONTEXT:
+    The user's recent mood history is provided. 
+    - Low scores (1-2) = Struggle, heaviness, rough patch.
+    - High scores (4-5) = Joy, flow, gratitude, wins.
+    
+    YOUR TASK:
+    Generate 3 short, inviting writing prompts to help them write today.
+
+    CRITICAL RULES (DO NOT BREAK):
+    1. NEVER mention the numeric scores (e.g., do NOT say "your 4/5 day" or "average score"). 
+    2. Instead, translate scores into feelings (e.g., "your recent joy," "this heavy week," "the calm you found").
+    3. Keep prompts SHORT (under 20 words). They should be easy to read at a glance.
+    4. Sound human, not clinical. Avoid corporate words like "implement," "ensure," or "metric."
+
+    GENERATE THESE 3 TYPES:
+    1. "Reflection" (Looking back at recent moments).
+    2. "Action" (A small, gentle step forward).
+    3. "Creative" (A fun, abstract, or sensory question to break writer's block).
+    
+    Output strictly JSON:
+    {{
+        "prompts": [
+            {{"type": "Reflection", "text": "..."}},
+            {{"type": "Action", "text": "..."}},
+            {{"type": "Creative", "text": "..."}}
+        ]
+    }}
+    """
+
+    ai_payload = None
+
+    try:
+        completion = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": context}
+            ],
+            model="llama-3.3-70b-versatile",
+            response_format={"type": "json_object"}
+        )
+        ai_payload = json.loads(completion.choices[0].message.content)
+
+    except Exception as e:
+        print(f"Prompt Gen Error: {e}")
+        ai_payload = {
+            "prompts": [
+                {"type": "Reflection", "text": "What is one thing you are grateful for today?"},
+                {"type": "Action", "text": "What is your main goal for tomorrow?"},
+                {"type": "Creative", "text": "If today was a color, what color would it be and why?"}
+            ]
+        }
+
+    # SAVE TO DB: Cache result for the rest of the day
+    try:
+        supabase.table("user_insights").insert({
+            "user_id": user_id,
+            "insight_type": "daily_prompts",
+            "payload": ai_payload,
+        }).execute()
+    except Exception as e:
+        print(f"Error caching prompts: {e}")
+
+    return ai_payload

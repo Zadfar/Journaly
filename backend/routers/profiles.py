@@ -18,7 +18,7 @@ def get_my_profile(user_id: str = Depends(get_current_user)):
     data = response.data
     return ProfileResponse(
         id=data['id'],
-        display_name=data.get('display_name'),
+        full_name=data.get('full_name'),
         avatar_url=data.get('avatar_url'),
         created_at=data['created_at']
     )

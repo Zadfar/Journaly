@@ -79,7 +79,7 @@ const MoodEntry = () => {
 
   // State C: Input Form
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col pt-[2%]">
       {/* Mood Grid */}
       <div className="grid grid-cols-5 gap-2 mb-6">
         {moodIcons.map((mood, index) => (

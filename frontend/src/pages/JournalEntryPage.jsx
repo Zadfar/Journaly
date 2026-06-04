@@ -10,20 +10,38 @@ const JournalEntryPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const isEditMode = !!id;
 
   const [isChanged, setIsChanged] = useState(false);
   const [currentContent, setCurrentContent] = useState('');
+  const [draftJournalId, setDraftJournalId] = useState(null);
+  const [skipInitialFetch, setSkipInitialFetch] = useState(false);
+
+  const effectiveJournalId =
+    draftJournalId || id;
+
+  const isEditMode = !!effectiveJournalId;
 
   const isSavingRef = useRef(false);
+  const internalNavigationRef = useRef(false);
+
+  const handleDraftCreated = (newId) => {
+    setDraftJournalId(newId);
+    setSkipInitialFetch(true);
+
+    window.history.replaceState(
+        {},
+        '',
+        `/journal/${newId}`
+    );
+};
 
   const { data: journal, isLoading } = useQuery({
-    queryKey: ['journal', id],
+    queryKey: ['journal', effectiveJournalId],
     queryFn: async () => {
-      const res = await api.get(`/journals/${id}`);
+      const res = await api.get(`/journals/${effectiveJournalId}`);
       return res.data;
     },
-    enabled: isEditMode, // Don't fetch if creating new
+    enabled: !!effectiveJournalId && !skipInitialFetch, // Don't fetch if creating new
     onSuccess: (data) => setCurrentContent(data.content || ''),
   });
 
@@ -32,12 +50,10 @@ const JournalEntryPage = () => {
     mutationFn: async (content) => {
       const payload = { content, mood_score: 7 }; // Hardcoded mood for now
       isSavingRef.current = true;
-      
-      if (isEditMode) {
-        // UPDATE
-        await api.put(`/journals/${id}`, payload);
+
+      if (effectiveJournalId) {
+        await api.put(`/journals/${effectiveJournalId}`, payload);
       } else {
-        // CREATE
         await api.post('/journals/', payload);
       }
     },
@@ -63,8 +79,11 @@ const JournalEntryPage = () => {
   // A. Block React Router Navigation (Navbar, Links, Back Button)
   // Condition: Block if form is dirty AND we are not currently submitting
   const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) =>
-      isChanged && !isSavingRef.current && currentLocation.pathname !== nextLocation.pathname
+  ({ currentLocation, nextLocation }) =>
+    isChanged &&
+    !isSavingRef.current &&
+    !internalNavigationRef.current &&
+    currentLocation.pathname !== nextLocation.pathname
   );
 
   // B. Block Browser Tab Closing (Refresh / Close Window)
@@ -106,8 +125,17 @@ const JournalEntryPage = () => {
     // and we set isChanged(false) in onSuccess, allowing it to pass.
   };
 
-  const confirmDiscard = () => {
+  const confirmDiscard = async () => {
     // User chose "Discard"
+
+    if (draftJournalId) {
+      try {
+        await api.delete(`/journals/${draftJournalId}`)
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
     if (blocker.state === "blocked") {
       blocker.proceed(); // Let the navigation happen
     } else {
@@ -160,7 +188,8 @@ const JournalEntryPage = () => {
         onChange={handleEditorChange}
         onSave={(content) => saveMutation.mutate(content)}
         isSaving={saveMutation.isPending}
-        journalId={journal?.id}
+        journalId={effectiveJournalId}
+        onDraftCreated={handleDraftCreated}
       />
     </div>
     <ConfirmModal 

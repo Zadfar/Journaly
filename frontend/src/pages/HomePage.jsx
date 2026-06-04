@@ -1,12 +1,13 @@
-import React from 'react';
 import { UserAuth } from '../context/AuthContext';
 import MoodEntry from '../components/MoodEntry';
 import DailyQuoteWidget from '../components/DailyQuoteWidget';
+import StarterPrompts from '../components/StarterPrompts';
 
 const HomePage = () => {
   const { session } = UserAuth();
 
-  const userName = session?.user.identities[0].identity_data.full_name;
+  //const userName = session?.user.identities[0].identity_data.full_name;
+  const userName = session?.user.email;
 
   return (
     <div className="space-y-8">
@@ -29,6 +30,9 @@ const HomePage = () => {
         {/* Side Widget */}
         <DailyQuoteWidget />
 
+      </div>
+      <div>
+        <StarterPrompts />
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import { Sparkles, Wand2 } from 'lucide-react';
 import useVisualViewport from '../hooks/useVisualViewport';
 import api from '../services/api';
 
-const JournalEditor = ({ initialContent, onSave, isSaving, journalId, onChange }) => {
+const JournalEditor = ({ initialContent, onSave, isSaving, journalId, onDraftCreated, onChange }) => {
   const [aiPrompt, setAiPrompt] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   
@@ -46,6 +46,12 @@ const JournalEditor = ({ initialContent, onSave, isSaving, journalId, onChange }
         content: text,
         journal_id: journalId
       });
+
+      const newJournalId = response.data.journal_id;
+
+      if (!journalId && newJournalId) {
+        onDraftCreated?.(newJournalId);
+      }
 
       setAiPrompt(response.data.prompt);
       

@@ -17,12 +17,18 @@ const JournalsPage = () => {
       const { data } = await api.get('/journals/');
       return data;
     },
-    refetchInterval: (data) => {
-      if (!data || !Array.isArray(data)) {
+    refetchInterval: (query) => {
+      const journals = query.state.data;
+
+      if (!journals || !Array.isArray(journals)) {
         return false;
       }
-      const isProcessing = data?.some(j => j.summary === "Generating summary...");
-      return isProcessing ? 2000 : false;
+
+      const isProcessing = journals.some(
+        j => j.summary === "Generating summary..."
+      );
+
+      return isProcessing ? 1000 : false;
     }
   });
 
