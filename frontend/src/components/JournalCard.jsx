@@ -2,9 +2,44 @@ import { useState, useRef, useEffect } from 'react';
 import { MoreHorizontal, Trash2, Calendar, Smile } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+const moodConfig = {
+  1: {
+    emoji: '😞',
+    label: 'Very Low',
+    bg: 'bg-red-100',
+    text: 'text-red-700'
+  },
+  2: {
+    emoji: '😕',
+    label: 'Low',
+    bg: 'bg-orange-100',
+    text: 'text-orange-700'
+  },
+  3: {
+    emoji: '😐',
+    label: 'Neutral',
+    bg: 'bg-yellow-100',
+    text: 'text-yellow-700'
+  },
+  4: {
+    emoji: '🙂',
+    label: 'Positive',
+    bg: 'bg-green-100',
+    text: 'text-green-700'
+  },
+  5: {
+    emoji: '😄',
+    label: 'Very Positive',
+    bg: 'bg-emerald-100',
+    text: 'text-emerald-700'
+  }
+};
+
 const JournalCard = ({ entry, onDelete }) => {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
+
+  const mood = moodConfig[entry.mood_score]
 
   // Close menu if clicking outside
   useEffect(() => {
@@ -34,10 +69,15 @@ const JournalCard = ({ entry, onDelete }) => {
               <Calendar size={14} />
               {dateStr}
             </div>
-            {entry.mood_score && (
-              <div className="flex items-center gap-1.5 bg-[#F3F0E7] px-2 py-1 rounded-full text-[#2C4C3B]">
-                <Smile size={14} />
-                <span>Mood: {entry.mood_score}/10</span>
+            {entry.mood_score && mood && (
+              <div
+                className={`
+                  flex items-center gap-2 px-3 py-1 rounded-full
+                  ${mood.bg} ${mood.text}
+                `}
+              >
+                <span>{mood.emoji}</span>
+                <span>{mood.label}</span>
               </div>
             )}
           </div>

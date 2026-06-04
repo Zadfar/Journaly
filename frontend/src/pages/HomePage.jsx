@@ -6,8 +6,7 @@ import StarterPrompts from '../components/StarterPrompts';
 const HomePage = () => {
   const { session } = UserAuth();
 
-  //const userName = session?.user.identities[0].identity_data.full_name;
-  const userName = session?.user.email;
+  const userName = session?.user.identities[0].identity_data.full_name;
 
   return (
     <div className="space-y-8">

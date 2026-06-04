@@ -77,10 +77,10 @@ const JournalEntryPage = () => {
     onSuccess: (data) => setCurrentContent(data.content || ''),
   });
 
-  // 2. Handles both Create and Update
+  // Handles both Create and Update
   const saveMutation = useMutation({
     mutationFn: async (content) => {
-      const payload = { content, mood_score: 7 }; // Hardcoded mood for now
+      const payload = { content, mood_score: 3 }; // Hardcoded mood for now
       isSavingRef.current = true;
 
       if (effectiveJournalId) {
@@ -106,9 +106,6 @@ const JournalEntryPage = () => {
     }
   });
 
-  // --- 3. NAVIGATION BLOCKER (The Core Logic) ---
-  
-  // A. Block React Router Navigation (Navbar, Links, Back Button)
   // Condition: Block if form is dirty AND we are not currently submitting
   const blocker = useBlocker(
   ({ currentLocation, nextLocation }) =>
@@ -130,7 +127,7 @@ const JournalEntryPage = () => {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isChanged]);
 
-  // --- 4. HANDLERS ---
+  // --- HANDLERS ---
   
   const handleEditorChange = (newContent) => {
     setCurrentContent(newContent);
@@ -153,8 +150,6 @@ const JournalEntryPage = () => {
   const confirmSave = () => {
     // User chose "Save & Exit"
     saveMutation.mutate(currentContent);
-    // Note: blocker.proceed() is not needed here because onSuccess triggers navigation,
-    // and we set isChanged(false) in onSuccess, allowing it to pass.
   };
 
   const confirmDiscard = async () => {
@@ -187,12 +182,12 @@ const JournalEntryPage = () => {
   if (isEditMode && isLoading) {
   return (
     <div className="max-w-4xl pb-20 animate-pulse">
-      {/* Fake Header */}
+      {/* Skeleton header */}
       <div className="flex gap-4 mb-6">
         <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
         <div className="h-10 w-48 bg-gray-200 rounded-lg"></div>
       </div>
-      {/* Fake Editor Box */}
+      {/* Skeleton Editor Box */}
       <div className="bg-gray-100 rounded-3xl h-[60vh] w-full"></div>
     </div>
   );

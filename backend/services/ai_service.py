@@ -7,18 +7,34 @@ import services.crypto_service as crypto_service
 
 def generate_summary(text: str):
     client = get_groq()
-    
+
     completion = client.chat.completions.create(
         messages=[
-            {
-                "role": "system", 
-                "content": "Write a concise, emotionally-aware summary in 10 to 15 words. Return JSON: { \"summary\": string, \"tags\": string[] }"
-            },
-            {"role": "user", "content": text}
-        ],
-        model="llama-3.1-8b-instant",
-        response_format={"type": "json_object"}
-    )
+                {
+                "role": "system",
+                "content": """
+                Return JSON:
+                {
+                "summary": string,
+                "tags": string[],
+                "mood_score": 1-5
+                }
+
+                Rules:
+                - Summary: 10-15 words
+                - Tags: 2-5 keywords
+                - Mood: 1=very low, 3=neutral, 5=very positive
+                """
+                },
+                {
+                    "role": "user",
+                    "content": text
+                }
+            ],
+            model="llama-3.1-8b-instant",
+            response_format={"type": "json_object"}
+        )
+
     return json.loads(completion.choices[0].message.content)
 
 async def generate_embeddings_via_edge(text: str):
@@ -126,7 +142,8 @@ async def process_journal_background(journal_id: str, content: str, user_id: str
         # 2. Update Journal with Summary
         supabase.table("journals").update({
             "summary": ai_data.get("summary"),
-            "tags": ai_data.get("tags")
+            "tags": ai_data.get("tags"),
+            "mood_score": ai_data.get("mood_score")
         }).eq("id", journal_id).execute()
 
         # 3. Insert Vectors
