@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate, useBlocker } from 'react-router-dom';
+import { useParams, useNavigate, useBlocker, useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../services/api';
 import JournalEditor from '../components/JournalEditor';
@@ -11,8 +11,40 @@ const JournalEntryPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  const [searchParams] = useSearchParams();
+
+  const starterPrompt = searchParams.get('prompt');
+
+  const starterPromptContent = {
+    type: 'doc',
+    content: [
+      {
+        type: 'blockquote',
+        content: [
+          {
+            type: 'paragraph',
+            content: [
+              {
+                type: 'text',
+                text: '✨ Prompt: ',
+                marks: [{ type: 'bold' }]
+              },
+              {
+                type: 'text',
+                text: starterPrompt
+              }
+            ]
+          }
+        ]
+      },
+      {
+        type: 'paragraph'
+      }
+    ]
+  };
+
   const [isChanged, setIsChanged] = useState(false);
-  const [currentContent, setCurrentContent] = useState('');
+  const [currentContent, setCurrentContent] = useState(starterPrompt);
   const [draftJournalId, setDraftJournalId] = useState(null);
   const [skipInitialFetch, setSkipInitialFetch] = useState(false);
 
@@ -184,7 +216,7 @@ const JournalEntryPage = () => {
       </div>
 
       <JournalEditor 
-        initialContent={journal?.content} 
+        initialContent={journal?.content ?? starterPromptContent} 
         onChange={handleEditorChange}
         onSave={(content) => saveMutation.mutate(content)}
         isSaving={saveMutation.isPending}

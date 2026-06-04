@@ -25,7 +25,7 @@ const StarterPrompts = () => {
 
   const handlePromptClick = (text) => {
     // Navigate to new journal with the prompt encoded in URL
-    navigate(`/journals/new?prompt=${encodeURIComponent(text)}`);
+    navigate(`/journal/new?prompt=${encodeURIComponent(text)}`);
   };
 
   if (isLoading) return <div className="h-32 animate-pulse bg-gray-100 rounded-3xl mt-8"></div>;
