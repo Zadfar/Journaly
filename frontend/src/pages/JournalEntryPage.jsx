@@ -173,14 +173,14 @@ const JournalEntryPage = () => {
   // Loading State
   if (isEditMode && isLoading) {
     return (
-      <div className="max-w-4xl mx-auto pb-20 animate-fade-in-up w-full flex flex-col h-[80vh]">
+      <div className="max-w-4xl mx-auto pb-20 animate-fade-in-up w-full flex flex-col h-[80vh] transition-colors duration-300">
         {/* Skeleton header */}
         <div className="flex items-center gap-4 mb-8 pt-4">
-          <div className="w-11 h-11 bg-stone-100 rounded-full animate-pulse border border-stone-200"></div>
-          <div className="h-8 w-40 bg-stone-100 rounded-full animate-pulse"></div>
+          <div className="w-11 h-11 bg-stone-100 dark:bg-stone-800 rounded-full animate-pulse border border-stone-200 dark:border-stone-700 transition-colors"></div>
+          <div className="h-8 w-40 bg-stone-100 dark:bg-stone-800 rounded-full animate-pulse transition-colors"></div>
         </div>
         {/* Skeleton Editor Box */}
-        <div className="bg-white border border-stone-100 rounded-4xl grow w-full animate-pulse shadow-sm"></div>
+        <div className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-4xl grow w-full animate-pulse shadow-sm dark:shadow-none transition-colors"></div>
       </div>
     );
   }
@@ -188,18 +188,18 @@ const JournalEntryPage = () => {
   return (
     <>
     {/* Setting flex layout so the editor component can stretch to fill the screen */}
-    <div className="max-w-4xl mx-auto pb-12 w-full animate-fade-in-up flex flex-col min-h-[85vh]">
+    <div className="max-w-4xl mx-auto pb-12 w-full animate-fade-in-up flex flex-col min-h-[85vh] transition-colors duration-300">
       
       {/* Header */}
       <div className="flex items-center gap-4 mb-8 pt-4">
         <button 
-          className="p-2.5 bg-white border border-stone-200 text-stone-500 rounded-full hover:bg-stone-50 hover:text-stone-800 transition-all duration-200 shadow-sm hover:shadow cursor-pointer"
+          className="p-2.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-stone-500 dark:text-stone-400 rounded-full hover:bg-stone-50 dark:hover:bg-stone-800 hover:text-stone-800 dark:hover:text-stone-100 transition-all duration-200 shadow-sm dark:shadow-none hover:shadow cursor-pointer"
           onClick={handleManualBack}
           aria-label="Go back"
         >
           <ArrowLeft size={20} />
         </button>
-        <h1 className="text-2xl md:text-3xl font-bold text-stone-800 tracking-tight">
+        <h1 className="text-2xl md:text-3xl font-bold text-stone-800 dark:text-stone-100 tracking-tight transition-colors">
           {isEditMode ? 'Edit Entry' : 'New Entry'}
         </h1>
       </div>

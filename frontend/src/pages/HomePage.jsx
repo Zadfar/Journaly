@@ -22,15 +22,14 @@ const HomePage = () => {
   }, []);
 
   return (
-    // Added a max-width to keep the reading/viewing length comfortable on ultra-wide screens
-    <div className="space-y-8 animate-fade-in-up max-w-5xl mx-auto pb-12 w-full">
+    <div className="space-y-8 animate-fade-in-up max-w-5xl mx-auto pb-12 w-full transition-colors duration-300">
       
       {/* 1. Header Section */}
       <div className="pt-4">
-        <h1 className="text-3xl md:text-4xl font-bold text-stone-800 tracking-tight">
+        <h1 className="text-3xl md:text-4xl font-bold text-stone-800 dark:text-stone-100 tracking-tight transition-colors">
           {greeting}, {userName}.
         </h1>
-        <p className="text-stone-500 mt-2 font-light text-lg">
+        <p className="text-stone-500 dark:text-stone-400 mt-2 font-light text-lg transition-colors">
           Ready to reflect on your day?
         </p>
       </div>
@@ -39,8 +38,8 @@ const HomePage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Main Card: Mood Tracker */}
-        <div className="lg:col-span-2 bg-white p-8 rounded-4xl border border-stone-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
-           <h2 className="text-xl font-semibold mb-6 text-stone-800">
+        <div className="lg:col-span-2 bg-white dark:bg-stone-900 p-8 rounded-4xl border border-stone-100 dark:border-stone-800 shadow-[0_4px_20px_rgba(0,0,0,0.02)] transition-colors duration-300">
+           <h2 className="text-xl font-semibold mb-6 text-stone-800 dark:text-stone-100 transition-colors">
              How are you feeling today?
            </h2>
            <MoodEntry />

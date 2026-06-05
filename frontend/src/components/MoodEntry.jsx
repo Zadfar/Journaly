@@ -61,7 +61,7 @@ const MoodEntry = () => {
         // min-h ensures the card doesn't collapse and jump during loading
         <div className="min-h-56 flex flex-col items-center justify-center">
             <Loader2 className="animate-spin text-emerald-500 h-8 w-8 mb-4" />
-            <p className="text-stone-400 text-sm font-light animate-pulse">Checking today's entry...</p>
+            <p className="text-stone-400 dark:text-stone-500 text-sm font-light animate-pulse transition-colors">Checking today's entry...</p>
         </div>
     )
   }
@@ -70,14 +70,14 @@ const MoodEntry = () => {
   if (hasLoggedToday || mutation.isSuccess) {
     return (
       <div className="min-h-56 flex flex-col items-center justify-center space-y-4 animate-fade-in-up">
-        <div className="bg-emerald-50 p-4 rounded-full mb-2">
-            <CheckCircle2 size={40} className="text-emerald-600" />
+        <div className="bg-emerald-50 dark:bg-emerald-500/10 p-4 rounded-full mb-2 transition-colors duration-300">
+            <CheckCircle2 size={40} className="text-emerald-600 dark:text-emerald-400" />
         </div>
         <div className="text-center space-y-1">
-            <p className="text-stone-800 font-medium text-lg">
+            <p className="text-stone-800 dark:text-stone-100 font-medium text-lg transition-colors">
             Mood logged for today.
             </p>
-            <p className="text-stone-500 text-sm font-light">
+            <p className="text-stone-500 dark:text-stone-400 text-sm font-light transition-colors">
             Check the Insights tab for trends!
             </p>
         </div>
@@ -97,8 +97,8 @@ const MoodEntry = () => {
             className={`
               group flex flex-col items-center justify-center p-3 sm:py-4 rounded-[1.25rem] transition-all duration-300
               ${selectedMood === index 
-                ? 'bg-white border-2 border-emerald-500 shadow-[0_4px_15px_rgba(16,185,129,0.15)] transform scale-[1.03]' 
-                : 'bg-stone-50 border-2 border-transparent hover:bg-stone-100 hover:scale-[1.03] cursor-pointer'
+                ? 'bg-white dark:bg-stone-800 border-2 border-emerald-500 shadow-[0_4px_15px_rgba(16,185,129,0.15)] transform scale-[1.03]' 
+                : 'bg-stone-50 dark:bg-stone-800/50 border-2 border-transparent hover:bg-stone-100 dark:hover:bg-stone-700 hover:scale-[1.03] cursor-pointer'
               }
             `}
           >
@@ -106,8 +106,8 @@ const MoodEntry = () => {
             <span className="text-3xl sm:text-4xl mb-2 filter drop-shadow-sm transition-transform duration-300 group-hover:scale-110 group-active:scale-95">
                 {mood.icon}
             </span>
-            <span className={`text-[10px] sm:text-xs font-medium leading-tight text-center transition-colors 
-                ${selectedMood === index ? 'text-emerald-700' : 'text-stone-500'}`
+            <span className={`text-[10px] sm:text-xs font-medium leading-tight text-center transition-colors duration-300
+                ${selectedMood === index ? 'text-emerald-700 dark:text-emerald-400' : 'text-stone-500 dark:text-stone-400'}`
             }>
               {mood.text}
             </span>
@@ -124,7 +124,7 @@ const MoodEntry = () => {
             w-full py-3.5 rounded-xl font-medium text-base transition-all duration-300 flex items-center justify-center
             ${selectedMood !== null 
               ? 'bg-emerald-600 text-white shadow-[0_4px_14px_0_rgba(16,185,129,0.39)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.23)] hover:-translate-y-0.5 hover:bg-emerald-700 cursor-pointer' 
-              : 'bg-stone-100 text-stone-400 cursor-not-allowed'
+              : 'bg-stone-100 dark:bg-stone-800 text-stone-400 dark:text-stone-500 cursor-not-allowed'
             }
           `}
         >

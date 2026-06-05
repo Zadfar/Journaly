@@ -12,9 +12,11 @@ import { useQuery } from '@tanstack/react-query';
 import api from '../services/api';
 import { UserAuth } from '../context/AuthContext';
 import { Activity } from 'lucide-react';
+import { UseTheme } from '../context/ThemeContext'; // <-- Import Theme Context
 
 const MoodChart = () => {
   const { session } = UserAuth();
+  const { isDark } = UseTheme(); // <-- Hook into theme state
   
   // Calculate range (Last 30 days or Current Month)
   const currentDate = new Date();
@@ -42,13 +44,13 @@ const MoodChart = () => {
 
   if (isLoading) {
     return (
-      <div className="bg-white p-6 sm:p-8 rounded-4xl border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] h-full min-h-75 flex flex-col">
-        <h2 className="text-xl font-bold text-stone-800 tracking-tight mb-8">Mood Flow</h2>
+      <div className="bg-white dark:bg-stone-900 p-6 sm:p-8 rounded-4xl border border-stone-100 dark:border-stone-800 shadow-[0_2px_10px_rgba(0,0,0,0.02)] dark:shadow-none h-full min-h-75 flex flex-col transition-colors duration-300">
+        <h2 className="text-xl font-bold text-stone-800 dark:text-stone-100 tracking-tight mb-8 transition-colors">Mood Flow</h2>
         <div className="flex-1 animate-pulse flex flex-col justify-end gap-6 pb-6">
-          <div className="w-full h-px bg-stone-100"></div>
-          <div className="w-full h-px bg-stone-100"></div>
-          <div className="w-full h-px bg-stone-100"></div>
-          <div className="w-full h-px bg-stone-100"></div>
+          <div className="w-full h-px bg-stone-100 dark:bg-stone-800 transition-colors"></div>
+          <div className="w-full h-px bg-stone-100 dark:bg-stone-800 transition-colors"></div>
+          <div className="w-full h-px bg-stone-100 dark:bg-stone-800 transition-colors"></div>
+          <div className="w-full h-px bg-stone-100 dark:bg-stone-800 transition-colors"></div>
         </div>
       </div>
     );
@@ -57,22 +59,22 @@ const MoodChart = () => {
   // Empty State
   if (!chartData || chartData.length === 0) {
     return (
-      <div className="bg-white p-6 sm:p-8 rounded-4xl border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] h-full min-h-75 flex flex-col">
-        <h2 className="text-xl font-bold text-stone-800 tracking-tight mb-4">Mood Flow</h2>
-        <div className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-stone-100 rounded-3xl p-6 text-center mt-2">
-          <div className="bg-stone-50 p-4 rounded-full mb-4">
-            <Activity size={28} className="text-stone-300" />
+      <div className="bg-white dark:bg-stone-900 p-6 sm:p-8 rounded-4xl border border-stone-100 dark:border-stone-800 shadow-[0_2px_10px_rgba(0,0,0,0.02)] dark:shadow-none h-full min-h-75 flex flex-col transition-colors duration-300">
+        <h2 className="text-xl font-bold text-stone-800 dark:text-stone-100 tracking-tight mb-4 transition-colors">Mood Flow</h2>
+        <div className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-stone-100 dark:border-stone-800 rounded-3xl p-6 text-center mt-2 transition-colors">
+          <div className="bg-stone-50 dark:bg-stone-800/50 p-4 rounded-full mb-4 transition-colors">
+            <Activity size={28} className="text-stone-300 dark:text-stone-600" />
           </div>
-          <p className="text-stone-600 font-medium">No mood data yet.</p>
-          <p className="text-sm text-stone-400 mt-1 font-light">Start logging to see your emotional flow!</p>
+          <p className="text-stone-600 dark:text-stone-300 font-medium transition-colors">No mood data yet.</p>
+          <p className="text-sm text-stone-400 dark:text-stone-500 mt-1 font-light transition-colors">Start logging to see your emotional flow!</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white p-6 sm:p-8 rounded-4xl border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] h-full flex flex-col">
-      <h2 className="text-xl font-bold text-stone-800 tracking-tight mb-8">Mood Flow</h2>
+    <div className="bg-white dark:bg-stone-900 p-6 sm:p-8 rounded-4xl border border-stone-100 dark:border-stone-800 shadow-[0_2px_10px_rgba(0,0,0,0.02)] dark:shadow-none h-full flex flex-col transition-colors duration-300">
+      <h2 className="text-xl font-bold text-stone-800 dark:text-stone-100 tracking-tight mb-8 transition-colors">Mood Flow</h2>
       
       <div className="flex-1 min-h-55 w-full">
         <ResponsiveContainer width="100%" height="100%">
@@ -80,13 +82,13 @@ const MoodChart = () => {
             <defs>
               <linearGradient id="colorMood" x1="0" y1="0" x2="0" y2="1">
                 {/* Emerald-500 to transparent */}
-                <stop offset="5%" stopColor="#10B981" stopOpacity={0.4}/>
+                <stop offset="5%" stopColor="#10B981" stopOpacity={isDark ? 0.6 : 0.4}/>
                 <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
               </linearGradient>
             </defs>
             
-            {/* Soft grid lines matching the stone palette */}
-            <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#F5F5F4" />
+            {/* Conditional grid colors using the useTheme hook! */}
+            <CartesianGrid strokeDasharray="4 4" vertical={false} stroke={isDark ? '#292524' : '#F5F5F4'} />
             
             <XAxis 
               dataKey="dateLabel" 
@@ -130,14 +132,15 @@ const MoodChart = () => {
   );
 };
 
+// Custom Tooltip component
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     const icons = ['', '😞', '😕', '😐', '🙂', '😄'];
     
     return (
-      <div className="bg-stone-900 text-stone-50 p-4 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-stone-800">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-2">
+      <div className="bg-stone-900 dark:bg-stone-800 text-stone-50 p-4 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-stone-800 dark:border-stone-700 transition-colors">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400 dark:text-stone-500 mb-2">
           {data.fullDate}
         </p>
         <div className="flex items-center gap-2.5">

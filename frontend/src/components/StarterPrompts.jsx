@@ -31,18 +31,18 @@ const StarterPrompts = () => {
   if (isLoading) {
     return (
       <div className="mt-8 animate-fade-in-up">
-        <div className="flex items-center gap-2 mb-5 text-stone-800">
-          <Sparkles size={20} className="text-emerald-500" />
+        <div className="flex items-center gap-2 mb-5 text-stone-800 dark:text-stone-100 transition-colors">
+          <Sparkles size={20} className="text-emerald-500 dark:text-emerald-400" />
           <h2 className="text-xl font-semibold">Where to start?</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white p-6 rounded-3xl border border-stone-100 h-40 md:h-44 flex flex-col justify-between animate-pulse">
-              <div className="w-24 h-3 bg-stone-100 rounded-full mb-4"></div>
+            <div key={i} className="bg-white dark:bg-stone-900 p-6 rounded-3xl border border-stone-100 dark:border-stone-800 h-40 md:h-44 flex flex-col justify-between animate-pulse transition-colors">
+              <div className="w-24 h-3 bg-stone-100 dark:bg-stone-800 rounded-full mb-4 transition-colors"></div>
               <div className="space-y-2.5 mb-auto">
-                <div className="w-full h-3.5 bg-stone-100 rounded-full"></div>
-                <div className="w-full h-3.5 bg-stone-100 rounded-full"></div>
-                <div className="w-3/4 h-3.5 bg-stone-100 rounded-full"></div>
+                <div className="w-full h-3.5 bg-stone-100 dark:bg-stone-800 rounded-full transition-colors"></div>
+                <div className="w-full h-3.5 bg-stone-100 dark:bg-stone-800 rounded-full transition-colors"></div>
+                <div className="w-3/4 h-3.5 bg-stone-100 dark:bg-stone-800 rounded-full transition-colors"></div>
               </div>
             </div>
           ))}
@@ -57,8 +57,8 @@ const StarterPrompts = () => {
   return (
     <div className="mt-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
       
-      <div className="flex items-center gap-2 mb-5 text-stone-800">
-        <Sparkles size={20} className="text-emerald-500" />
+      <div className="flex items-center gap-2 mb-5 text-stone-800 dark:text-stone-100 transition-colors">
+        <Sparkles size={20} className="text-emerald-500 dark:text-emerald-400" />
         <h2 className="text-xl font-semibold">Where to start?</h2>
       </div>
 
@@ -67,22 +67,22 @@ const StarterPrompts = () => {
           <button
             key={idx}
             onClick={() => handlePromptClick(prompt.text)}
-            className="group relative bg-white p-6 sm:p-7 rounded-3xl border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 hover:border-emerald-100 transition-all duration-300 text-left flex flex-col justify-between h-40 md:h-44 overflow-hidden cursor-pointer"
+            className="group relative bg-white dark:bg-stone-900 p-6 sm:p-7 rounded-3xl border border-stone-100 dark:border-stone-800 shadow-[0_2px_10px_rgba(0,0,0,0.02)] dark:shadow-none hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 hover:border-emerald-100 dark:hover:border-emerald-800/50 transition-all duration-300 text-left flex flex-col justify-between h-40 md:h-44 overflow-hidden cursor-pointer"
           >
             {/* Background Hover Gradient */}
-            <div className="absolute inset-0 bg-linear-to-br from-transparent to-emerald-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0"></div>
+            <div className="absolute inset-0 bg-linear-to-br from-transparent to-emerald-50/50 dark:to-emerald-900/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0"></div>
             
             <div className="relative z-10">
-              <div className="flex items-center gap-1.5 text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3 transition-colors group-hover:text-emerald-600">
-                <span className="text-emerald-500">{getIcon(prompt.type)}</span>
+              <div className="flex items-center gap-1.5 text-[10px] font-bold text-stone-400 dark:text-stone-500 uppercase tracking-widest mb-3 transition-colors group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+                <span className="text-emerald-500 dark:text-emerald-400">{getIcon(prompt.type)}</span>
                 {prompt.type}
               </div>
-              <p className="text-stone-700 font-medium leading-relaxed line-clamp-3 group-hover:text-stone-900 transition-colors">
+              <p className="text-stone-700 dark:text-stone-300 font-medium leading-relaxed line-clamp-3 group-hover:text-stone-900 dark:group-hover:text-stone-100 transition-colors">
                 {prompt.text}
               </p>
             </div>
             
-            <div className="absolute bottom-5 right-5 opacity-0 transform translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-emerald-600 z-10">
+            <div className="absolute bottom-5 right-5 opacity-0 transform translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-emerald-600 dark:text-emerald-400 z-10">
               <ArrowRight size={20} />
             </div>
           </button>
