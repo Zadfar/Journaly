@@ -30,7 +30,7 @@ def get_daily_quote():
         return cache.data
 
     # 2. FETCH FROM API NINJAS
-    url = "https://api.api-ninjas.com/v2/quotes?category=inspirational%2Cwisdom"
+    url = "https://api.api-ninjas.com/v2/quoteoftheday"
     
     try:
         response = requests.get(url, headers={'X-Api-Key': api_key})
