@@ -9,9 +9,9 @@ import {
 } from 'recharts';
 import { format, parseISO, startOfMonth, endOfMonth } from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
-import { Loader2 } from 'lucide-react';
 import api from '../services/api';
 import { UserAuth } from '../context/AuthContext';
+import { Activity } from 'lucide-react';
 
 const MoodChart = () => {
   const { session } = UserAuth();
@@ -42,8 +42,14 @@ const MoodChart = () => {
 
   if (isLoading) {
     return (
-      <div className="h-full min-h-75 flex items-center justify-center bg-white rounded-3xl border border-[#2C4C3B]/10">
-        <Loader2 className="animate-spin text-[#2C4C3B]" />
+      <div className="bg-white p-6 sm:p-8 rounded-4xl border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] h-full min-h-75 flex flex-col">
+        <h2 className="text-xl font-bold text-stone-800 tracking-tight mb-8">Mood Flow</h2>
+        <div className="flex-1 animate-pulse flex flex-col justify-end gap-6 pb-6">
+          <div className="w-full h-px bg-stone-100"></div>
+          <div className="w-full h-px bg-stone-100"></div>
+          <div className="w-full h-px bg-stone-100"></div>
+          <div className="w-full h-px bg-stone-100"></div>
+        </div>
       </div>
     );
   }
@@ -51,34 +57,42 @@ const MoodChart = () => {
   // Empty State
   if (!chartData || chartData.length === 0) {
     return (
-      <div className="h-full min-h-75 flex flex-col items-center justify-center bg-white rounded-3xl border border-[#2C4C3B]/10 p-6 text-center">
-        <p className="text-[#2C4C3B]/60 font-medium">No mood data yet for this month.</p>
-        <p className="text-sm text-gray-400 mt-1">Start logging your daily vibe!</p>
+      <div className="bg-white p-6 sm:p-8 rounded-4xl border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] h-full min-h-75 flex flex-col">
+        <h2 className="text-xl font-bold text-stone-800 tracking-tight mb-4">Mood Flow</h2>
+        <div className="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-stone-100 rounded-3xl p-6 text-center mt-2">
+          <div className="bg-stone-50 p-4 rounded-full mb-4">
+            <Activity size={28} className="text-stone-300" />
+          </div>
+          <p className="text-stone-600 font-medium">No mood data yet.</p>
+          <p className="text-sm text-stone-400 mt-1 font-light">Start logging to see your emotional flow!</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white p-6 rounded-3xl border border-[#2C4C3B]/10 shadow-sm h-full flex flex-col">
-      <h2 className="text-xl font-bold text-[#2C4C3B] mb-6">Mood Flow</h2>
+    <div className="bg-white p-6 sm:p-8 rounded-4xl border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] h-full flex flex-col">
+      <h2 className="text-xl font-bold text-stone-800 tracking-tight mb-8">Mood Flow</h2>
       
-      <div className="flex-1 min-h-62.5 w-full">
+      <div className="flex-1 min-h-55 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+          <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="colorMood" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#2C4C3B" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#2C4C3B" stopOpacity={0}/>
+                {/* Emerald-500 to transparent */}
+                <stop offset="5%" stopColor="#10B981" stopOpacity={0.4}/>
+                <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
               </linearGradient>
             </defs>
             
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+            {/* Soft grid lines matching the stone palette */}
+            <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#F5F5F4" />
             
             <XAxis 
               dataKey="dateLabel" 
               axisLine={false} 
               tickLine={false} 
-              tick={{ fill: '#9CA3AF', fontSize: 12 }}
+              tick={{ fill: '#A8A29E', fontSize: 11, fontWeight: 500 }}
               dy={10}
             />
             
@@ -88,21 +102,26 @@ const MoodChart = () => {
               tickLine={false} 
               ticks={[1, 2, 3, 4, 5]} 
               tickFormatter={(value) => {
-                 const icons = ['', '🙁', '😐', '🙂', '😄', '🤗'];
+                 const icons = ['', '🙁', '😕', '😐', '🙂', '😄'];
                  return icons[value];
               }}
-              width={40}
+              width={45}
+              tick={{ fontSize: 16 }} // Make emojis slightly larger
             />
             
-            <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#2C4C3B', strokeWidth: 1, strokeDasharray: '5 5' }} />
+            <Tooltip 
+              content={<CustomTooltip />} 
+              cursor={{ stroke: '#10B981', strokeWidth: 2, strokeDasharray: '6 6', opacity: 0.5 }} 
+            />
             
             <Area 
               type="monotone" 
               dataKey="mood_score" 
-              stroke="#2C4C3B" 
-              strokeWidth={3}
+              stroke="#10B981" 
+              strokeWidth={4}
               fillOpacity={1} 
               fill="url(#colorMood)" 
+              animationDuration={1500}
             />
           </AreaChart>
         </ResponsiveContainer>
@@ -111,18 +130,23 @@ const MoodChart = () => {
   );
 };
 
-const CustomTooltip = ({ active, payload, label }) => {
+const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
+    const icons = ['', '😞', '😕', '😐', '🙂', '😄'];
+    
     return (
-      <div className="bg-[#2C4C3B] text-white p-3 rounded-xl shadow-xl border border-white/20">
-        <p className="text-xs opacity-80 mb-1">{data.fullDate}</p>
-        <div className="flex items-center gap-2">
-           <span className="text-2xl">
-             {/* Map score to icon again for the tooltip */}
-             {["", "🙁", "😐", "🙂", "😄", "🤗"][data.mood_score]}
+      <div className="bg-stone-900 text-stone-50 p-4 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-stone-800">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-2">
+          {data.fullDate}
+        </p>
+        <div className="flex items-center gap-2.5">
+           <span className="text-2xl drop-shadow-sm">
+             {icons[data.mood_score]}
            </span>
-           <p className="font-bold text-lg">{data.mood_label}</p>
+           <p className="font-semibold text-lg text-stone-100">
+             {data.mood_label || "Logged Entry"}
+           </p>
         </div>
       </div>
     );

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Quote, RefreshCw } from 'lucide-react';
+import { Quote } from 'lucide-react';
 import api from '../services/api';
 
 const DailyQuoteWidget = () => {
@@ -14,32 +14,42 @@ const DailyQuoteWidget = () => {
   });
 
   return (
-    <div className="bg-[#228B22] text-white p-6 rounded-3xl shadow-lg relative overflow-hidden flex flex-col justify-between h-full min-h-50">
+    <div className="bg-stone-900 text-stone-50 p-8 rounded-4xl shadow-[0_8px_30px_rgba(0,0,0,0.06)] relative overflow-hidden flex flex-col justify-between w-full h-full min-h-56">
       
       {/* Background Decoration Icon */}
-      <Quote className="absolute top-3 right-3 text-white/10 w-16 h-16 pointer-events-none" />
+      <Quote className="absolute -top-2 -right-2 text-stone-800/80 w-24 h-24 pointer-events-none rotate-12" />
 
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold flex items-center gap-2">
-            Daily Quote
-          </h2>
-        </div>
+      {/* Header */}
+      <div className="relative z-10">
+        <h2 className="text-xs font-semibold tracking-widest uppercase text-stone-400 mb-6">
+          Daily Inspiration
+        </h2>
 
+        {/* Loading State */}
         {isLoading ? (
-          <div className="space-y-3 animate-pulse opacity-50">
-             <div className="h-4 bg-white/30 rounded w-3/4"></div>
-             <div className="h-4 bg-white/30 rounded w-full"></div>
-             <div className="h-4 bg-white/30 rounded w-1/2"></div>
+          <div className="space-y-4 animate-pulse">
+             <div className="h-4 bg-stone-800 rounded-md w-11/12"></div>
+             <div className="h-4 bg-stone-800 rounded-md w-full"></div>
+             <div className="h-4 bg-stone-800 rounded-md w-3/4 mb-4"></div>
+             <div className="h-3 bg-stone-800 rounded-md w-1/3 mt-6"></div>
           </div>
         ) : isError ? (
-           <p className="italic opacity-90">"The only journey is the one within."</p>
+          /* Error / Fallback State */
+          <div className="animate-fade-in-up">
+            <p className="text-lg font-light italic leading-relaxed text-stone-100">
+              "The only journey is the one within."
+            </p>
+            <p className="mt-5 text-xs font-medium uppercase tracking-widest text-stone-400">
+              — Rainer Maria Rilke
+            </p>
+          </div>
         ) : (
-          <div className="animate-in fade-in slide-in-from-bottom-2 duration-700">
-            <p className="text-lg font-medium italic leading-relaxed opacity-95">
+          /* Success State */
+          <div className="animate-fade-in-up">
+            <p className="text-lg font-light italic leading-relaxed text-stone-100">
               "{quote.quote}"
             </p>
-            <p className="mt-4 text-sm font-bold uppercase tracking-wide opacity-70">
+            <p className="mt-5 text-xs font-medium uppercase tracking-widest text-stone-400">
               — {quote.author}
             </p>
           </div>

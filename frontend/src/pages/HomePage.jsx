@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { UserAuth } from '../context/AuthContext';
 import MoodEntry from '../components/MoodEntry';
 import DailyQuoteWidget from '../components/DailyQuoteWidget';
@@ -6,33 +7,57 @@ import StarterPrompts from '../components/StarterPrompts';
 const HomePage = () => {
   const { session } = UserAuth();
 
-  const userName = session?.user.identities[0].identity_data.full_name;
+  // Extract just the first name for a more personal, friendly greeting
+  const fullName = session?.user?.identities?.[0]?.identity_data?.full_name;
+  const userName = fullName ? fullName.split(' ')[0] : 'Friend';
+
+  // Dynamic time-based greeting
+  const [greeting, setGreeting] = useState('Good Morning');
+  
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) setGreeting('Good Morning');
+    else if (hour < 18) setGreeting('Good Afternoon');
+    else setGreeting('Good Evening');
+  }, []);
 
   return (
-    <div className="space-y-8">
+    // Added a max-width to keep the reading/viewing length comfortable on ultra-wide screens
+    <div className="space-y-8 animate-fade-in-up max-w-5xl mx-auto pb-12 w-full">
       
       {/* 1. Header Section */}
-      <div>
-        <h1 className="text-3xl font-bold text-[#2C4C3B]">Good Morning, {userName}</h1>
-        <p className="text-[#2C4C3B]/60">Ready to reflect on your day?</p>
+      <div className="pt-4">
+        <h1 className="text-3xl md:text-4xl font-bold text-stone-800 tracking-tight">
+          {greeting}, {userName}.
+        </h1>
+        <p className="text-stone-500 mt-2 font-light text-lg">
+          Ready to reflect on your day?
+        </p>
       </div>
 
-      {/* 2. The Dashboard Grid */}
+      {/* 2. The Dashboard Grid (Bento Box Layout) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* Main Card */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-3xl border border-[#2C4C3B]/5 shadow-sm">
-           <h2 className="text-xl font-bold mb-4">How are you feeling Today?</h2>
+        {/* Main Card: Mood Tracker */}
+        <div className="lg:col-span-2 bg-white p-8 rounded-4xl border border-stone-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+           <h2 className="text-xl font-semibold mb-6 text-stone-800">
+             How are you feeling today?
+           </h2>
            <MoodEntry />
         </div>
 
-        {/* Side Widget */}
-        <DailyQuoteWidget />
+        {/* Side Widget: Daily Quote */}
+        <div className="lg:col-span-1 flex">
+          <DailyQuoteWidget />
+        </div>
 
       </div>
-      <div>
+      
+      {/* 3. AI Starter Prompts */}
+      <div className="pt-2">
         <StarterPrompts />
       </div>
+      
     </div>
   );
 };

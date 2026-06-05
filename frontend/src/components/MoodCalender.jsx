@@ -12,7 +12,7 @@ import {
   addMonths, 
   subMonths 
 } from 'date-fns';
-import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import api from '../services/api';
 import { UserAuth } from '../context/AuthContext';
 
@@ -42,24 +42,24 @@ const MoodCalendar = () => {
     enabled: !!session?.user.id
   });
 
-  // Helper to get color based on score
+  // Helper to get color based on score (Matching the JournalCard palette)
   const getMoodColor = (score) => {
     switch(score) {
-      case 1: return 'bg-[#cf3933]'; // (Rough)
-      case 2: return 'bg-[#ff9a1d]'; // (Not Good)
-      case 3: return 'bg-[#91d1d2]'; // (Neutral)
-      case 4: return 'bg-[#8cc685]'; // (Good)
-      case 5: return 'bg-[#fede50]'; // (Great)
-      default: return 'bg-gray-100';
+      case 1: return 'bg-rose-400 text-white shadow-sm shadow-rose-200 border border-rose-300';
+      case 2: return 'bg-orange-300 text-stone-800 shadow-sm shadow-orange-200 border border-orange-200';
+      case 3: return 'bg-amber-200 text-stone-800 shadow-sm shadow-amber-200 border border-amber-300';
+      case 4: return 'bg-teal-400 text-white shadow-sm shadow-teal-200 border border-teal-300';
+      case 5: return 'bg-emerald-500 text-white shadow-sm shadow-emerald-200 border border-emerald-400';
+      default: return 'bg-stone-50 border border-transparent hover:bg-stone-100 hover:border-stone-200 text-stone-700';
     }
   };
 
   const getMoodTooltip = (score) => {
-    const labels = ["", "Rough", "Not Good", "Okay", "Good", "Great!"];
+    const labels = ["", "Rough", "Low", "Neutral", "Positive", "Great"];
     return labels[score] || "";
   };
 
-  // 4. Generate Calendar Days
+  // Generate Calendar Days
   const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -67,53 +67,65 @@ const MoodCalendar = () => {
   const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
 
   return (
-    <div className="bg-white p-6 rounded-3xl border border-[#2C4C3B]/10 shadow-sm h-full">
+    <div className="bg-white p-6 sm:p-8 rounded-4xl border border-stone-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] h-full flex flex-col justify-between">
       
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-[#2C4C3B]">
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-xl font-bold text-stone-800 tracking-tight">
           {format(currentDate, 'MMMM yyyy')}
         </h2>
-        <div className="flex gap-2">
-          <button onClick={prevMonth} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-            <ChevronLeft size={20} className="text-[#2C4C3B]" />
+        <div className="flex gap-1 bg-stone-50 rounded-full border border-stone-100 p-1">
+          <button onClick={prevMonth} className="p-1.5 hover:bg-white hover:shadow-sm rounded-full transition-all cursor-pointer">
+            <ChevronLeft size={18} className="text-stone-500" />
           </button>
-          <button onClick={nextMonth} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-            <ChevronRight size={20} className="text-[#2C4C3B]" />
+          <button onClick={nextMonth} className="p-1.5 hover:bg-white hover:shadow-sm rounded-full transition-all cursor-pointer">
+            <ChevronRight size={18} className="text-stone-500" />
           </button>
         </div>
       </div>
 
       {isLoading ? (
-        <div className="h-64 flex items-center justify-center">
-          <Loader2 className="animate-spin text-[#2C4C3B]" />
+        // Skeleton Grid
+        <div className="animate-pulse">
+          <div className="grid grid-cols-7 mb-4">
+             {weekDays.map(day => (
+              <div key={day} className="h-3 bg-stone-100 rounded mx-2 mb-2"></div>
+            ))}
+          </div>
+          <div className="grid grid-cols-7 gap-y-3">
+             {Array.from({ length: 35 }).map((_, i) => (
+                <div key={i} className="flex justify-center">
+                    <div className="h-10 w-10 bg-stone-50 rounded-full"></div>
+                </div>
+             ))}
+          </div>
         </div>
       ) : (
         <>
           {/* Weekday Labels */}
-          <div className="grid grid-cols-7 mb-2">
+          <div className="grid grid-cols-7 mb-4">
             {weekDays.map(day => (
-              <div key={day} className="text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <div key={day} className="text-center text-[10px] font-bold text-stone-400 uppercase tracking-widest">
                 {day}
               </div>
             ))}
           </div>
 
           {/* Calendar Grid */}
-          <div className="grid grid-cols-7 gap-y-4">
+          <div className="grid grid-cols-7 gap-y-3 sm:gap-y-4">
             {days.map((day) => {
-              // Find mood for this specific day
               const dayMood = moodHistory?.find((m) => 
                 isSameDay(new Date(m.created_at), day)
               );
 
               return (
-                <div key={day.toString()} className="flex flex-col items-center">
+                <div key={day.toString()} className="group flex flex-col items-center">
                   <div 
                     className={`
-                      h-10 w-10 flex items-center justify-center rounded-full text-sm font-medium transition-all duration-300
-                      ${!isSameMonth(day, currentDate) ? 'text-gray-300' : 'text-gray-700'}
-                      ${dayMood ? `${getMoodColor(dayMood.mood_score)} text-white shadow-md scale-105` : 'hover:bg-gray-50'}
+                      h-10 w-10 sm:h-11 sm:w-11 flex items-center justify-center rounded-full text-sm font-medium transition-transform duration-200 cursor-default
+                      ${!isSameMonth(day, currentDate) ? 'opacity-30' : 'opacity-100'}
+                      ${dayMood ? getMoodColor(dayMood.mood_score) : getMoodColor(null)}
+                      ${dayMood ? 'group-hover:scale-110' : 'group-hover:scale-[1.05]'}
                     `}
                     title={dayMood ? `${getMoodTooltip(dayMood.mood_score)}` : ''}
                   >
@@ -126,18 +138,15 @@ const MoodCalendar = () => {
         </>
       )}
 
-      {/* Legend */}
-      <div className="mt-6 flex justify-center gap-4 text-xs text-gray-500">
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 rounded-full bg-[#cf3933]"></div> Rough
+      {/* Elegant Gradient Legend */}
+      <div className="mt-8 pt-6 border-t border-stone-100">
+        <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-2">
+            <span>Rough</span>
+            <span>Great</span>
         </div>
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 rounded-full bg-[#91d1d2]"></div> Okay
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="w-3 h-3 rounded-full bg-[#fede50]"></div> Great
-        </div>
+        <div className="h-2.5 w-full rounded-full bg-linear-to-r from-rose-400 via-amber-200 to-emerald-500 opacity-80"></div>
       </div>
+      
     </div>
   );
 };

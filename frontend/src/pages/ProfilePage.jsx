@@ -9,8 +9,6 @@ const ProfilePage = () => {
 
   const fetchProfile = async () => {
     const { data } = await api.get('/profile/');
-    console.log(data);
-    
     return data;
   };
 
@@ -25,21 +23,34 @@ const ProfilePage = () => {
     ? new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
     : '...';
 
-  if (error) return <div>Error loading profile</div>;
+  if (error) {
+    return (
+      <div className="max-w-2xl mx-auto p-4 bg-red-50 text-red-600 rounded-xl border border-red-100 text-center font-medium animate-fade-in-up">
+        Error loading profile. Please try refreshing the page.
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-[#2C4C3B]">My Profile</h1>
-        <p className="text-[#2C4C3B]/60">Manage your personal details.</p>
+    <div className="max-w-2xl mx-auto space-y-8 animate-fade-in-up w-full">
+      
+      {/* Header */}
+      <div className="pt-4">
+        <h1 className="text-3xl font-bold text-stone-800 tracking-tight">My Profile</h1>
+        <p className="text-stone-500 mt-2 font-light text-lg">Manage your personal details.</p>
       </div>
 
-      <div className="bg-white rounded-3xl p-8 border border-[#2C4C3B]/10 shadow-sm relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-32 bg-[#228B22]/10"></div>
-        <div className="relative flex flex-col items-center text-center">
+      {/* Profile Card */}
+      <div className="bg-white rounded-4xl border border-stone-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] relative overflow-hidden">
+        
+        {/* Soft Decorative Banner */}
+        <div className="absolute top-0 left-0 w-full h-32 bg-linear-to-b from-emerald-50/80 to-transparent"></div>
+        
+        <div className="relative p-8 flex flex-col items-center text-center mt-8">
           
-          <div className="relative mb-6 group">
-            <div className="w-32 h-32 rounded-full border-4 border-white shadow-md overflow-hidden bg-[#F3F0E7] flex items-center justify-center">
+          {/* Avatar Container */}
+          <div className="relative mb-6">
+            <div className="w-32 h-32 rounded-full border-4 border-white shadow-md overflow-hidden bg-stone-50 flex items-center justify-center relative z-10 transition-transform hover:scale-105 duration-300">
               {profile?.avatar_url ? (
                 <img 
                   src={profile.avatar_url} 
@@ -47,34 +58,44 @@ const ProfilePage = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <User size={48} className="text-[#2C4C3B]/40" />
+                <User size={48} className="text-stone-300" />
               )}
             </div>
           </div>
 
+          {/* Name & Loading State */}
           {isLoading ? (
-             <div className="h-8 w-48 bg-[#F3F0E7] rounded-lg animate-pulse mb-2"></div>
+             <div className="h-8 w-48 bg-stone-100 rounded-lg animate-pulse mb-3"></div>
           ) : (
-             <h2 className="text-2xl font-bold text-[#2C4C3B] mb-2">
-               {profile?.full_name}
+             <h2 className="text-2xl font-bold text-stone-800 mb-3 tracking-tight">
+               {profile?.full_name || "Journaler"}
              </h2>
           )}
           
-          <div className="flex flex-col gap-2 mt-2">
-            <div className="flex items-center gap-2 text-[#2C4C3B]/60 text-sm">
-              <Mail size={16} />
+          {/* User Details */}
+          <div className="flex flex-col gap-3 mt-1 items-center">
+            
+            <div className="flex items-center gap-2.5 text-stone-500 text-sm font-medium bg-stone-50 px-4 py-2 rounded-full border border-stone-100">
+              <Mail size={16} className="text-stone-400" />
               <span>{user?.email}</span>
             </div>
 
-            <div className="flex items-center gap-2 text-[#2C4C3B]/60 text-sm">
-              <Calendar size={16} />
-              <span>Joined {joinedDate}</span>
+            <div className="flex items-center gap-2.5 text-stone-500 text-sm">
+              <Calendar size={16} className="text-stone-400" />
+              {isLoading ? (
+                  <div className="h-4 w-32 bg-stone-100 rounded animate-pulse"></div>
+              ) : (
+                  <span className="font-light">Joined {joinedDate}</span>
+              )}
             </div>
+            
           </div>
 
-          <button className="mt-8 px-6 py-2.5 border border-[#2C4C3B]/20 rounded-xl text-[#2C4C3B] font-semibold hover:bg-[#F3F0E7] transition-colors text-sm">
+          {/* Action Button */}
+          <button className="mt-8 px-8 py-2.5 rounded-full border border-stone-200 text-stone-600 font-medium hover:bg-stone-50 hover:text-stone-900 transition-all duration-200 shadow-sm hover:shadow cursor-pointer">
             Edit Profile
           </button>
+          
         </div>
       </div>
     </div>

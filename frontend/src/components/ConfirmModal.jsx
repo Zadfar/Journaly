@@ -1,30 +1,36 @@
 import React from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Loader2 } from 'lucide-react';
 
 const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel, onDiscard, isSaving }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 border border-[#2C4C3B]/10 scale-100">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-sm animate-in fade-in duration-300">
+      
+      {/* Modal Card */}
+      <div className="bg-white rounded-4xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] max-w-md w-full p-8 border border-stone-100 animate-fade-in-up" style={{ animationDuration: '0.3s' }}>
         
-        <div className="flex items-start gap-4">
-          <div className="p-3 bg-yellow-50 text-yellow-600 rounded-full">
-            <AlertTriangle size={24} />
+        {/* Content */}
+        <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5">
+          <div className="p-4 bg-amber-50 text-amber-600 rounded-2xl shrink-0">
+            <AlertTriangle size={28} />
           </div>
-          <div>
-            <h3 className="text-xl font-bold text-[#2C4C3B]">{title}</h3>
-            <p className="text-[#2C4C3B]/70 mt-2 leading-relaxed">
+          <div className="pt-1">
+            <h3 className="text-xl font-bold text-stone-800 tracking-tight">{title}</h3>
+            <p className="text-stone-500 mt-2 leading-relaxed font-light text-sm">
               {message}
             </p>
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-end">
+        {/* Action Buttons */}
+        <div className="mt-10 flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
+          
           {/* Cancel (Stay Here) */}
           <button 
             onClick={onCancel}
-            className="px-4 py-2 text-[#2C4C3B] font-medium hover:bg-[#F3F0E7] rounded-lg transition-colors"
+            disabled={isSaving}
+            className="px-5 py-3 text-stone-500 font-medium hover:bg-stone-50 hover:text-stone-800 rounded-full transition-colors cursor-pointer disabled:opacity-50"
           >
             Cancel
           </button>
@@ -32,7 +38,8 @@ const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel, onDiscard, 
           {/* Discard (Leave without saving) */}
           <button 
             onClick={onDiscard}
-            className="px-4 py-2 text-red-600 font-medium hover:bg-red-50 rounded-lg transition-colors"
+            disabled={isSaving}
+            className="px-5 py-3 text-red-600 font-medium hover:bg-red-50 rounded-full transition-colors cursor-pointer disabled:opacity-50"
           >
             Discard Changes
           </button>
@@ -41,12 +48,18 @@ const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel, onDiscard, 
           <button 
             onClick={onConfirm}
             disabled={isSaving}
-            className="px-6 py-2 bg-[#228B22] text-white font-medium rounded-lg hover:bg-[#1e7a1e]
-             transition-colors shadow-lg shadow-green-900/10 flex items-center justify-center min-w-25"
+            className="px-6 py-3 bg-emerald-600 text-white font-medium rounded-full hover:bg-emerald-700
+             transition-all shadow-[0_4px_14px_0_rgba(16,185,129,0.39)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.23)] hover:-translate-y-0.5 flex items-center justify-center min-w-30 cursor-pointer disabled:opacity-70 disabled:transform-none"
           >
-            {isSaving ? 'Saving...' : 'Save & Exit'}
+            {isSaving ? (
+                <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Saving...
+                </>
+            ) : 'Save & Exit'}
           </button>
         </div>
+        
       </div>
     </div>
   );

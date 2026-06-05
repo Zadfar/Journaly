@@ -58,8 +58,10 @@ const MoodEntry = () => {
   // State A: Loading initial status
   if (isLoadingStatus) {
     return (
-        <div className="h-full flex items-center justify-center">
-            <Loader2 className="animate-spin text-[#2C4C3B]" />
+        // min-h ensures the card doesn't collapse and jump during loading
+        <div className="min-h-56 flex flex-col items-center justify-center">
+            <Loader2 className="animate-spin text-emerald-500 h-8 w-8 mb-4" />
+            <p className="text-stone-400 text-sm font-light animate-pulse">Checking today's entry...</p>
         </div>
     )
   }
@@ -67,35 +69,46 @@ const MoodEntry = () => {
   // State B: Already logged today (or just finished logging)
   if (hasLoggedToday || mutation.isSuccess) {
     return (
-      <div className="h-full flex flex-col items-center justify-center space-y-3 py-6 animate-in fade-in duration-500">
-        <CheckCircle2 size={48} className="text-[#2C4C3B]" />
-        <p className="text-[#2C4C3B] font-medium text-center">
-          You've tracked your mood for today.<br/>
-          <span className="text-sm opacity-70">Check the Insights tab for trends!</span>
-        </p>
+      <div className="min-h-56 flex flex-col items-center justify-center space-y-4 animate-fade-in-up">
+        <div className="bg-emerald-50 p-4 rounded-full mb-2">
+            <CheckCircle2 size={40} className="text-emerald-600" />
+        </div>
+        <div className="text-center space-y-1">
+            <p className="text-stone-800 font-medium text-lg">
+            Mood logged for today.
+            </p>
+            <p className="text-stone-500 text-sm font-light">
+            Check the Insights tab for trends!
+            </p>
+        </div>
       </div>
     );
   }
 
   // State C: Input Form
   return (
-    <div className="flex flex-col pt-[2%]">
+    <div className="flex flex-col h-full animate-fade-in-up">
       {/* Mood Grid */}
-      <div className="grid grid-cols-5 gap-2 mb-6">
+      <div className="grid grid-cols-5 gap-2 sm:gap-3 mb-8">
         {moodIcons.map((mood, index) => (
           <button
             key={index}
             onClick={() => handleMoodSelect(index)}
             className={`
-              flex flex-col items-center justify-center p-2 rounded-2xl transition-all duration-200
+              group flex flex-col items-center justify-center p-3 sm:py-4 rounded-[1.25rem] transition-all duration-300
               ${selectedMood === index 
-                ? 'bg-[#2C4C3B] text-white transform scale-105 shadow-md' 
-                : 'hover:bg-[#2C4C3B]/10 text-[#2C4C3B]/70 hover:scale-105'
+                ? 'bg-white border-2 border-emerald-500 shadow-[0_4px_15px_rgba(16,185,129,0.15)] transform scale-[1.03]' 
+                : 'bg-stone-50 border-2 border-transparent hover:bg-stone-100 hover:scale-[1.03] cursor-pointer'
               }
             `}
           >
-            <span className="text-3xl mb-1 filter drop-shadow-sm">{mood.icon}</span>
-            <span className="text-[10px] font-medium leading-tight text-center">
+            {/* The group-hover scales the emoji up slightly when hovering over the button box */}
+            <span className="text-3xl sm:text-4xl mb-2 filter drop-shadow-sm transition-transform duration-300 group-hover:scale-110 group-active:scale-95">
+                {mood.icon}
+            </span>
+            <span className={`text-[10px] sm:text-xs font-medium leading-tight text-center transition-colors 
+                ${selectedMood === index ? 'text-emerald-700' : 'text-stone-500'}`
+            }>
               {mood.text}
             </span>
           </button>
@@ -103,21 +116,21 @@ const MoodEntry = () => {
       </div>
 
       {/* Action Button */}
-      <div className="mt-auto">
+      <div>
         <button
           onClick={handleSaveMood}
           disabled={selectedMood === null || mutation.isPending}
           className={`
-            w-full py-3 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center
+            w-full py-3.5 rounded-xl font-medium text-base transition-all duration-300 flex items-center justify-center
             ${selectedMood !== null 
-              ? 'bg-[#2C4C3B] text-white shadow-lg hover:shadow-xl hover:bg-[#1e3629]' 
-              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              ? 'bg-emerald-600 text-white shadow-[0_4px_14px_0_rgba(16,185,129,0.39)] hover:shadow-[0_6px_20px_rgba(16,185,129,0.23)] hover:-translate-y-0.5 hover:bg-emerald-700 cursor-pointer' 
+              : 'bg-stone-100 text-stone-400 cursor-not-allowed'
             }
           `}
         >
           {mutation.isPending ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               Saving...
             </>
           ) : (

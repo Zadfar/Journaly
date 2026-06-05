@@ -15,7 +15,7 @@ const JournalEntryPage = () => {
 
   const starterPrompt = searchParams.get('prompt');
 
-  const starterPromptContent = {
+  const starterPromptContent = starterPrompt ? {
     type: 'doc',
     content: [
       {
@@ -41,16 +41,14 @@ const JournalEntryPage = () => {
         type: 'paragraph'
       }
     ]
-  };
+  } : "";
 
   const [isChanged, setIsChanged] = useState(false);
   const [currentContent, setCurrentContent] = useState(starterPrompt);
   const [draftJournalId, setDraftJournalId] = useState(null);
   const [skipInitialFetch, setSkipInitialFetch] = useState(false);
 
-  const effectiveJournalId =
-    draftJournalId || id;
-
+  const effectiveJournalId = draftJournalId || id;
   const isEditMode = !!effectiveJournalId;
 
   const isSavingRef = useRef(false);
@@ -65,7 +63,7 @@ const JournalEntryPage = () => {
         '',
         `/journal/${newId}`
     );
-};
+  };
 
   const { data: journal, isLoading } = useQuery({
     queryKey: ['journal', effectiveJournalId],
@@ -115,7 +113,7 @@ const JournalEntryPage = () => {
     currentLocation.pathname !== nextLocation.pathname
   );
 
-  // B. Block Browser Tab Closing (Refresh / Close Window)
+  // Block Browser Tab Closing (Refresh / Close Window)
   useEffect(() => {
     const handleBeforeUnload = (e) => {
       if (isChanged) {
@@ -133,7 +131,6 @@ const JournalEntryPage = () => {
     setCurrentContent(newContent);
     
     // Check if truly changed from initial
-    // (If creating new, any text > 0 is dirty. If editing, compare with DB content)
     const initial = journal?.content || '';
     if (newContent !== initial) {
       setIsChanged(true);
@@ -143,18 +140,14 @@ const JournalEntryPage = () => {
   };
 
   const handleManualBack = () => {
-    // Our custom Back Arrow button
     navigate('/journals'); 
   };
 
   const confirmSave = () => {
-    // User chose "Save & Exit"
     saveMutation.mutate(currentContent);
   };
 
   const confirmDiscard = async () => {
-    // User chose "Discard"
-
     if (draftJournalId) {
       try {
         await api.delete(`/journals/${draftJournalId}`)
@@ -166,59 +159,64 @@ const JournalEntryPage = () => {
     if (blocker.state === "blocked") {
       blocker.proceed(); // Let the navigation happen
     } else {
-      // Fallback for manual button clicks if blocker wasn't triggered
       setIsChanged(false);
       navigate('/journals');
     }
   };
 
   const cancelNavigation = () => {
-    // User chose "Cancel"
     if (blocker.state === "blocked") {
       blocker.reset(); // Stay on page
     }
   };
 
+  // Loading State
   if (isEditMode && isLoading) {
-  return (
-    <div className="max-w-4xl pb-20 animate-pulse">
-      {/* Skeleton header */}
-      <div className="flex gap-4 mb-6">
-        <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
-        <div className="h-10 w-48 bg-gray-200 rounded-lg"></div>
+    return (
+      <div className="max-w-4xl mx-auto pb-20 animate-fade-in-up w-full flex flex-col h-[80vh]">
+        {/* Skeleton header */}
+        <div className="flex items-center gap-4 mb-8 pt-4">
+          <div className="w-11 h-11 bg-stone-100 rounded-full animate-pulse border border-stone-200"></div>
+          <div className="h-8 w-40 bg-stone-100 rounded-full animate-pulse"></div>
+        </div>
+        {/* Skeleton Editor Box */}
+        <div className="bg-white border border-stone-100 rounded-4xl grow w-full animate-pulse shadow-sm"></div>
       </div>
-      {/* Skeleton Editor Box */}
-      <div className="bg-gray-100 rounded-3xl h-[60vh] w-full"></div>
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <>
-    <div className="max-w-4xl pb-20">
-      <div className="mb-6 flex gap-8">
-        <div className='ml-2 bg-white rounded-3xl h-8 w-8 mt-0.5'>
-          <button 
-            className='outline-none bg-transparent text-gray-800 pl-1 pt-1 cursor-pointer'
-            onClick={handleManualBack}
-          >
-            <ArrowLeft />
-          </button>
-        </div>
-        <h1 className="text-3xl font-bold text-[#2C4C3B] text-center">
+    {/* Setting flex layout so the editor component can stretch to fill the screen */}
+    <div className="max-w-4xl mx-auto pb-12 w-full animate-fade-in-up flex flex-col min-h-[85vh]">
+      
+      {/* Header */}
+      <div className="flex items-center gap-4 mb-8 pt-4">
+        <button 
+          className="p-2.5 bg-white border border-stone-200 text-stone-500 rounded-full hover:bg-stone-50 hover:text-stone-800 transition-all duration-200 shadow-sm hover:shadow cursor-pointer"
+          onClick={handleManualBack}
+          aria-label="Go back"
+        >
+          <ArrowLeft size={20} />
+        </button>
+        <h1 className="text-2xl md:text-3xl font-bold text-stone-800 tracking-tight">
           {isEditMode ? 'Edit Entry' : 'New Entry'}
         </h1>
       </div>
 
-      <JournalEditor 
-        initialContent={journal?.content ?? starterPromptContent} 
-        onChange={handleEditorChange}
-        onSave={(content) => saveMutation.mutate(content)}
-        isSaving={saveMutation.isPending}
-        journalId={effectiveJournalId}
-        onDraftCreated={handleDraftCreated}
-      />
+      {/* Editor Container */}
+      <div className="grow flex flex-col">
+        <JournalEditor 
+          initialContent={journal?.content ?? starterPromptContent} 
+          onChange={handleEditorChange}
+          onSave={(content) => saveMutation.mutate(content)}
+          isSaving={saveMutation.isPending}
+          journalId={effectiveJournalId}
+          onDraftCreated={handleDraftCreated}
+        />
+      </div>
     </div>
+
     <ConfirmModal 
       isOpen={blocker.state === "blocked"}
       title="Unsaved Changes"
