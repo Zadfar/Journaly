@@ -2,7 +2,7 @@ import axios from 'axios';
 import { supabase } from '../supabaseClient';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000', // Your FastAPI URL
+  baseURL: import.meta.env.VITE_BACKEND_URL, // Your FastAPI URL
 });
 
 // Request Interceptor: Automatically adds the Auth Token to every request
