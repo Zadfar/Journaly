@@ -7,7 +7,8 @@ app = FastAPI(title="Journaly API")
 # CORS - Update allow_origins with your frontend URL (e.g. EC2 IP or Netlify URL)
 origins = [
     "http://localhost:5173",
-    "http://127.0.0.1:5173" 
+    "http://127.0.0.1:5173",
+    "https://journaly-8609.onrender.com" 
 ]
 
 app.add_middleware(
