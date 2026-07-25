@@ -16,8 +16,8 @@ A data-driven journaling platform integrating LLM-based writing assistance, nati
 
 **Frontend**
 
-* **Framework:** React (Vite)
-* **Styling:** Tailwind CSS v4
+* **Framework:** React
+* **Styling:** Tailwind CSS
 * **State Management & Caching:** React Query (`@tanstack/react-query`)
 * **Editor:** TipTap
 * **Data Visualization:** Recharts
@@ -38,8 +38,8 @@ Make sure you have Node.js and Python installed on your machine. You will also n
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/journaly.git
-cd journaly
+git clone https://github.com/Zadfar/Journaly.git
+cd Journaly
 
 ```
 
